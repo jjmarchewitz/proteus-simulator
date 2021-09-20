@@ -3,4 +3,6 @@
 
 #include "tigr.h"
 
+int main();
+
 #endif /* GAME_HPP */

@@ -1,7 +1,7 @@
 CC = g++
 LD = $(CC)
 
-TARGET ?= game.out
+TARGET ?= game
 SRC_DIRS ?= ./src
 
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
@@ -11,7 +11,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -DOBJC_OLD_DISPATCH_PROTOTYPES
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -Os -DOBJC_OLD_DISPATCH_PROTOTYPES
 
 LDFLAGS ?= -framework OpenGL -framework Cocoa
 

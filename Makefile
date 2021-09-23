@@ -5,7 +5,7 @@ TARGET ?= game
 
 CPPFLAGS ?= -v -MMD -MP -Os -DOBJC_OLD_DISPATCH_PROTOTYPES
 
-IGNORED_WARNINGS ?= -Wunused-private-field -Wreturn-type
+IGNORED_WARNINGS ?= -Wall
 
 ifeq ($(OS),Windows_NT)
 	LDFLAGS = -lopengl32 -lgdi32

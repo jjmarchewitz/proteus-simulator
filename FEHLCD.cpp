@@ -1,23 +1,39 @@
 #include "FEHLCD.h"
+#include "tigr.h"
 
-#define CharHeight 17
-#define CharWidth 12
+#define CharHeight 34 // 2 * 17, the normal character height on the Proteus
+#define CharWidth 12  // 2 * 24, the normal character width on the Proteus
 
-bool initialized = false;
-
-#define LCD_WIDTH 320
-#define LCD_HEIGHT 240
+#define LCD_WIDTH 640  // 2 * 320, the normal width of the Proteus LCD
+#define LCD_HEIGHT 480 // 2 * 240, the normal height of the Proteus LCD
 
 #define REFRESH_RATE 70 //Hz
+
+bool initialized = false;
 
 FEHLCD LCD;
 
 FEHLCD::FEHLCD()
 {
+    Initialize();
+}
+
+void FEHLCD::Initialize()
+{
+    if (initialized == false)
+    {
+        initialized = true;
+
+        _Initialize();
+    }
 }
 
 void FEHLCD::_Initialize()
 {
+    Tigr *screen = tigrWindow(LCD_WIDTH, LCD_HEIGHT, "Test", TIGR_AUTO);
+    tigrClear(screen, tigrRGB(0, 0, 0));
+    tigrPrint(screen, tfont, 20, 20, tigrRGB(0xff, 0xff, 0xff), "Hello world!");
+    tigrUpdate(screen);
 }
 
 bool FEHLCD::Touch(float *x_pos, float *y_pos)
@@ -37,10 +53,6 @@ void FEHLCD::PrintImage(int x, int y)
 }
 
 void FEHLCD::PrintLogo(int x, int y)
-{
-}
-
-void FEHLCD::Initialize()
 {
 }
 
@@ -222,10 +234,6 @@ void FEHLCD::TS_SPI_Init()
 }
 
 int FEHLCD::abs(int)
-{
-}
-
-void FEHLCD::_Initialize()
 {
 }
 

@@ -2373,7 +2373,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #include <objc/runtime.h>
 
 // maybe this is available somewhere in objc runtime?
-#if __LP64__ || (TARGET_OS_EMBEDDED && !TARGET_OS_IPHONE) || TARGET_OS || NS_BUILD_32_LIKE_64
+#if __LP64__ || (TARGET_OS_EMBEDDED && !TARGET_OS_IPHONE) || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64
 #define NSIntegerEncoding "q"
 #define NSUIntegerEncoding "L"
 #else

@@ -2,18 +2,24 @@
 
 int main()
 {
-    // Tigr *screen = tigrWindow(320, 240, "Test", TIGR_AUTO);
-    // while (!tigrClosed(screen))
-    // {
-    //     tigrClear(screen, tigrRGB(0, 0, 0));
-    //     tigrPrint(screen, tfont, 10, 10, tigrRGB(0xff, 0xff, 0xff), "Hello world!");
-    //     tigrUpdate(screen);
-    // }
-    // tigrFree(screen);
+
+    LCD.SetFontColor(FEHLCD::Red);
+    LCD.SetBackgroundColor(FEHLCD::White);
+    LCD.Clear();
+
+    LCD.DrawPixel(75, 75);
+
+    LCD.DrawHorizontalLine(25, 50, 200);
+    LCD.DrawVerticalLine(200, 0, 100);
+    LCD.DrawRectangle(0, 0, 50, 50);
+    LCD.FillRectangle(50, 50, 50, 50);
+
+    LCD.SetFontColor(FEHLCD::Green);
+    LCD.FillRectangle(320 - 50, 240 - 50, 50, 50);
+    LCD.DrawVerticalLine(320 / 2, 0, 240);
 
     while (1)
     {
-        LCD.Clear(FEHLCD::Red);
     }
 
     return 0;

@@ -5,8 +5,10 @@
 #define CharHeight 34 // 2 * 17, the normal character height on the Proteus
 #define CharWidth 12  // 2 * 24, the normal character width on the Proteus
 
-#define LCD_WIDTH 640  // 2 * 320, the normal width of the Proteus LCD
-#define LCD_HEIGHT 480 // 2 * 240, the normal height of the Proteus LCD
+#define LCD_WIDTH 640    // 2 * 320, the normal width of the Proteus LCD
+#define LCD_HEIGHT 480   // 2 * 240, the normal height of the Proteus LCD
+#define WINDOW_WIDTH 640 // TODO: Consider changing the actual window width and height to have a border around the "screen"
+#define WINDOW_HEIGHT 480
 
 #define REFRESH_RATE 70 //Hz
 
@@ -32,7 +34,12 @@ void FEHLCD::Initialize()
 
 void FEHLCD::_Initialize()
 {
-    screen = tigrWindow(LCD_WIDTH, LCD_HEIGHT, "Test", TIGR_AUTO);
+    _width = LCD_WIDTH;
+    _height = LCD_HEIGHT;
+    _forecolor = WHITE;
+    _backcolor = BLACK;
+
+    screen = tigrWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Proteus Simulator", TIGR_AUTO);
     Clear();
 }
 
@@ -63,82 +70,87 @@ void FEHLCD::SetOrientation(FEHLCDOrientation orientation)
 
 void FEHLCD::Clear(FEHLCDColor color)
 {
-    TPixel rgbValues;
-    switch (color)
-    {
-    case Black:
-        rgbValues = tigrRGB((char)(BLACK >> 16), (char)(BLACK >> 8), (char)BLACK);
-        break;
-    case White:
-        rgbValues = tigrRGB((char)(WHITE >> 16), (char)(WHITE >> 8), (char)WHITE);
-        break;
-    case Red:
-        rgbValues = tigrRGB((char)(RED >> 16), (char)(RED >> 8), (char)RED);
-        break;
-    case Green:
-        rgbValues = tigrRGB((char)(GREEN >> 16), (char)(GREEN >> 8), (char)GREEN);
-        break;
-    case Blue:
-        rgbValues = tigrRGB((char)(BLUE >> 16), (char)(BLUE >> 8), (char)BLUE);
-        break;
-    case Scarlet:
-        rgbValues = tigrRGB((char)(SCARLET >> 16), (char)(SCARLET >> 8), (char)SCARLET);
-        break;
-    case Gray:
-        rgbValues = tigrRGB((char)(GRAY >> 16), (char)(GRAY >> 8), (char)GRAY);
-        break;
-    default:
-        rgbValues = tigrRGB((char)(BLACK >> 16), (char)(BLACK >> 8), (char)BLACK);
-    }
-
-    tigrClear(screen, rgbValues);
-    tigrUpdate(screen);
+    unsigned int htmlColor = ConvertFEHColorTo24Bit(color);
+    Clear(htmlColor);
 }
 
 void FEHLCD::Clear(unsigned int color)
 {
-    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
-    Clear(castedColor);
+    // Currently takes in a 24-bit color as input
+    TPixel rgbValues = tigrRGB((char)(color >> 16), (char)(color >> 8), (char)color);
+    tigrClear(screen, rgbValues);
+    tigrUpdate(screen);
 }
 
 void FEHLCD::Clear()
 {
-    Clear(Black);
+    Clear(_backcolor);
 }
 
 void FEHLCD::SetFontColor(FEHLCDColor color)
 {
-    _forecolor = color;
+    unsigned int htmlColor = ConvertFEHColorTo24Bit(color);
+    SetFontColor(htmlColor);
 }
 
 void FEHLCD::SetFontColor(unsigned int color)
 {
-    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
-    SetFontColor(castedColor);
+    // Currently takes in a 24-bit color as input
+    _forecolor = color;
+    SetRegisterColorValues();
 }
 
 void FEHLCD::SetBackgroundColor(FEHLCDColor color)
 {
-    _backcolor = color;
+    unsigned int htmlColor = ConvertFEHColorTo24Bit(color);
+    SetBackgroundColor(htmlColor);
 }
 
 void FEHLCD::SetBackgroundColor(unsigned int color)
 {
-    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
-    SetBackgroundColor(castedColor);
+    // Currently takes in a 24-bit color as input
+    _backcolor = color;
+    SetRegisterColorValues();
 }
 
-// Drawing Functions
+/*************************
+*   DRAWING FUNCTIONS    *
+*************************/
+
+// DrawPixel takes in Proteus coordinates up to (320, 240)
 void FEHLCD::DrawPixel(int x, int y)
 {
+    // Force X and Y to be positive
+    x = (x < 0) ? 0 : x;
+    y = (y < 0) ? 0 : y;
+
+    // Force X and Y to be on-screen
+    x = x % _width;
+    x = x % _height;
+
+    // TODO: Move the creation of this TPixel into SetFontColor()
+    TPixel color = tigrRGB((char)(_forecolor >> 16), (char)(_forecolor >> 8), (char)_forecolor);
+    // Use tigrFill because a "pixel" to the student is really a 2x2 rectangle because the dimensions of the screen are doubled
+    tigrFill(screen, x * 2, y * 2, 2, 2, color);
+    // No tigrUpdate() here because it was painfully slow updating after every pixel.
 }
 
 void FEHLCD::DrawHorizontalLine(int y, int x1, int x2)
 {
+    for (int i = x1; i <= x2; i++)
+    {
+        DrawPixel(i, y);
+    }
+    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawVerticalLine(int x, int y1, int y2)
 {
+    for (int i = y1; i <= y2; i++)
+    {
+        DrawPixel(x, i);
+    }
+    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawLine(int x1, int y1, int x2, int y2)
@@ -147,10 +159,22 @@ void FEHLCD::DrawLine(int x1, int y1, int x2, int y2)
 
 void FEHLCD::DrawRectangle(int x, int y, int width, int height)
 {
+    DrawHorizontalLine(y, x, x + width);
+    DrawHorizontalLine(y + height, x, x + width);
+    DrawVerticalLine(x, y, y + height);
+    DrawVerticalLine(x + width, y, y + height);
 }
 
 void FEHLCD::FillRectangle(int x, int y, int width, int height)
 {
+    for (int currentX = x; currentX <= x + width; currentX++)
+    {
+        for (int currentY = y; currentY <= y + height; currentY++)
+        {
+            DrawPixel(currentX, currentY);
+        }
+    }
+    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawCircle(int x0, int y0, int r)
@@ -319,14 +343,52 @@ void FEHLCD::RepeatColor()
 
 unsigned int FEHLCD::ConvertFEHColorTo24Bit(FEHLCDColor color)
 {
+    unsigned int htmlColor;
+
+    switch (color)
+    {
+    case Black:
+        htmlColor = BLACK;
+        break;
+    case White:
+        htmlColor = WHITE;
+        break;
+    case Red:
+        htmlColor = RED;
+        break;
+    case Green:
+        htmlColor = GREEN;
+        break;
+    case Blue:
+        htmlColor = BLUE;
+        break;
+    case Scarlet:
+        htmlColor = SCARLET;
+        break;
+    case Gray:
+        htmlColor = GRAY;
+        break;
+    default:
+        htmlColor = BLACK;
+    }
+
+    return htmlColor;
 }
 
 unsigned int FEHLCD::Convert24BitColorTo16Bit(unsigned int color)
 {
+    unsigned char r = (color & 0xFF0000u) >> 16;
+    unsigned char g = (color & 0x00FF00u) >> 8;
+    unsigned char b = (color & 0x0000FFu);
+    return ConvertRGBColorTo16Bit(r, g, b);
 }
 
 unsigned int FEHLCD::ConvertRGBColorTo16Bit(unsigned char r, unsigned char g, unsigned char b)
 {
+    unsigned int ru = r >> 2;
+    unsigned int gu = g >> 2;
+    unsigned int bu = b >> 2;
+    return (ru << 12) | (gu << 6) | bu;
 }
 
 void FEHLCD::NextLine()

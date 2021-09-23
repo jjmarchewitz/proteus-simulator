@@ -44,6 +44,8 @@ public:
     void Clear(unsigned int color);
     void Clear();
 
+    void Update();
+
     void SetFontColor(FEHLCDColor color);
     void SetFontColor(unsigned int color);
     void SetBackgroundColor(FEHLCDColor color);

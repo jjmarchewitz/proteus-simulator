@@ -7,6 +7,7 @@
 
 #define LCD_WIDTH 320
 #define LCD_HEIGHT 240
+#define LCD_SCALE_FACTOR 2
 #define WINDOW_WIDTH 640 // TODO: Consider changing the actual window width and height to have a border around the "screen"
 #define WINDOW_HEIGHT 480
 
@@ -79,12 +80,16 @@ void FEHLCD::Clear(unsigned int color)
     // Currently takes in a 24-bit color as input
     TPixel rgbValues = tigrRGB((char)(color >> 16), (char)(color >> 8), (char)color);
     tigrClear(screen, rgbValues);
-    tigrUpdate(screen);
 }
 
 void FEHLCD::Clear()
 {
     Clear(_backcolor);
+}
+
+void FEHLCD::Update()
+{
+    tigrUpdate(screen);
 }
 
 void FEHLCD::SetFontColor(FEHLCDColor color)
@@ -113,6 +118,13 @@ void FEHLCD::SetBackgroundColor(unsigned int color)
     SetRegisterColorValues();
 }
 
+void Swap(int &a, int &b)
+{
+    int c = a;
+    a = b;
+    b = c;
+}
+
 /*************************
 *   DRAWING FUNCTIONS    *
 *************************/
@@ -124,15 +136,16 @@ void FEHLCD::DrawPixel(int x, int y)
     x = (x < 0) ? 0 : x;
     y = (y < 0) ? 0 : y;
 
-    // Force X and Y to be on-screen
+    // Force X and Y to be within the LCD boundaries
     x = x % _width;
-    x = x % _height;
+    y = y % _height;
+
+    std::cout << x << " " << y << std::endl;
 
     // TODO: Move the creation of this TPixel into SetFontColor()
     TPixel color = tigrRGB((char)(_forecolor >> 16), (char)(_forecolor >> 8), (char)_forecolor);
-    // Use tigrFill because a "pixel" to the student is really a 2x2 rectangle because the dimensions of the screen are doubled
-    tigrFill(screen, x * 2, y * 2, 2, 2, color);
-    // No tigrUpdate() here because it was painfully slow updating after every pixel.
+    // Use tigrFill because a "pixel" to the student is really a 2x2 rectangle because the dimensions of the LCD are scaled up to be bigger
+    tigrFill(screen, x * LCD_SCALE_FACTOR, y * LCD_SCALE_FACTOR, LCD_SCALE_FACTOR, LCD_SCALE_FACTOR, color);
 }
 
 void FEHLCD::DrawHorizontalLine(int y, int x1, int x2)
@@ -141,7 +154,6 @@ void FEHLCD::DrawHorizontalLine(int y, int x1, int x2)
     {
         DrawPixel(i, y);
     }
-    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawVerticalLine(int x, int y1, int y2)
@@ -150,11 +162,39 @@ void FEHLCD::DrawVerticalLine(int x, int y1, int y2)
     {
         DrawPixel(x, i);
     }
-    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawLine(int x1, int y1, int x2, int y2)
 {
+
+    // Using a float to be more precise, will cast the end result to an int
+    float slope = (y2 - y1) / (x2 - x1);
+
+    int xVal, yVal, startX, endX, startY, endY;
+
+    // Makes the lower of the two input X values be the startX, and the higher be the endX
+    startX = (x1 <= x2) ? x1 : x2;
+    endX = (x1 <= x2) ? x2 : x1;
+
+    for (xVal = startX; xVal <= endX; xVal++)
+    {
+        // For lines with a slope > 1, there will sometimes be multiple Y values for the same X value after the pixels
+        // are truncated when casted to ints. These variables and the loop below ensure that all pixels are plotted
+        startY = (int)(slope * (xVal - x1) + y1);
+        endY = (int)(slope * (xVal - x1 + 1) + y1);
+
+        // Make sure to begin at the lower Y value
+        if (endY < startY)
+        {
+            Swap(startY, endY);
+        }
+
+        // Draw all of the Y values for a given X value
+        for (yVal = startY; yVal <= endY; yVal++)
+        {
+            DrawPixel(xVal, yVal);
+        }
+    }
 }
 
 void FEHLCD::DrawRectangle(int x, int y, int width, int height)
@@ -174,7 +214,6 @@ void FEHLCD::FillRectangle(int x, int y, int width, int height)
             DrawPixel(currentX, currentY);
         }
     }
-    tigrUpdate(screen);
 }
 
 void FEHLCD::DrawCircle(int x0, int y0, int r)
@@ -297,8 +336,16 @@ void FEHLCD::TS_SPI_Init()
 {
 }
 
-int FEHLCD::abs(int)
+int FEHLCD::abs(int n)
 {
+    if (n < 0)
+    {
+        return -n;
+    }
+    else
+    {
+        return n;
+    }
 }
 
 void FEHLCD::_Clear()

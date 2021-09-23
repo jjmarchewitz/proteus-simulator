@@ -140,8 +140,6 @@ void FEHLCD::DrawPixel(int x, int y)
     x = x % _width;
     y = y % _height;
 
-    std::cout << x << " " << y << std::endl;
-
     // TODO: Move the creation of this TPixel into SetFontColor()
     TPixel color = tigrRGB((char)(_forecolor >> 16), (char)(_forecolor >> 8), (char)_forecolor);
     // Use tigrFill because a "pixel" to the student is really a 2x2 rectangle because the dimensions of the LCD are scaled up to be bigger

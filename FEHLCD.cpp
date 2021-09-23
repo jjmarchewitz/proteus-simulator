@@ -5,8 +5,8 @@
 #define CharHeight 34 // 2 * 17, the normal character height on the Proteus
 #define CharWidth 12  // 2 * 24, the normal character width on the Proteus
 
-#define LCD_WIDTH 640    // 2 * 320, the normal width of the Proteus LCD
-#define LCD_HEIGHT 480   // 2 * 240, the normal height of the Proteus LCD
+#define LCD_WIDTH 320
+#define LCD_HEIGHT 240
 #define WINDOW_WIDTH 640 // TODO: Consider changing the actual window width and height to have a border around the "screen"
 #define WINDOW_HEIGHT 480
 

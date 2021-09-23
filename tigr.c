@@ -120,6 +120,7 @@ void tigrPosition(Tigr *bmp, int scale, int windowW, int windowH, int out[4]);
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <stddef.h>
 #endif
 
 #if __linux__ && !__ANDROID__
@@ -4559,7 +4560,6 @@ extern const char tigr_upscale_gl_vs[], tigr_upscale_gl_fs[], tigr_default_fx_gl
 extern const int tigr_upscale_gl_vs_size, tigr_upscale_gl_fs_size, tigr_default_fx_gl_fs_size;
 
 #ifdef _WIN32
-
 #ifdef TIGR_GAPI_GL_WIN_USE_GLEXT
 #include <glext.h>
 #include <wglext.h>

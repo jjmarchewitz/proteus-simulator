@@ -11,6 +11,10 @@ int main()
     // }
     // tigrFree(screen);
 
-    LCD.Clear();
+    while (1)
+    {
+        LCD.Clear(FEHLCD::Red);
+    }
+
     return 0;
 }

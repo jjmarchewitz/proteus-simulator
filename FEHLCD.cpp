@@ -1,5 +1,6 @@
 #include "FEHLCD.h"
 #include "tigr.h"
+#include <iostream>
 
 #define CharHeight 34 // 2 * 17, the normal character height on the Proteus
 #define CharWidth 12  // 2 * 24, the normal character width on the Proteus
@@ -12,6 +13,7 @@
 bool initialized = false;
 
 FEHLCD LCD;
+Tigr *screen;
 
 FEHLCD::FEHLCD()
 {
@@ -30,10 +32,8 @@ void FEHLCD::Initialize()
 
 void FEHLCD::_Initialize()
 {
-    Tigr *screen = tigrWindow(LCD_WIDTH, LCD_HEIGHT, "Test", TIGR_AUTO);
-    tigrClear(screen, tigrRGB(0, 0, 0));
-    tigrPrint(screen, tfont, 20, 20, tigrRGB(0xff, 0xff, 0xff), "Hello world!");
-    tigrUpdate(screen);
+    screen = tigrWindow(LCD_WIDTH, LCD_HEIGHT, "Test", TIGR_AUTO);
+    Clear();
 }
 
 bool FEHLCD::Touch(float *x_pos, float *y_pos)
@@ -58,34 +58,74 @@ void FEHLCD::PrintLogo(int x, int y)
 
 void FEHLCD::SetOrientation(FEHLCDOrientation orientation)
 {
+    _orientation = orientation;
 }
 
 void FEHLCD::Clear(FEHLCDColor color)
 {
+    TPixel rgbValues;
+    switch (color)
+    {
+    case Black:
+        rgbValues = tigrRGB((char)(BLACK >> 16), (char)(BLACK >> 8), (char)BLACK);
+        break;
+    case White:
+        rgbValues = tigrRGB((char)(WHITE >> 16), (char)(WHITE >> 8), (char)WHITE);
+        break;
+    case Red:
+        rgbValues = tigrRGB((char)(RED >> 16), (char)(RED >> 8), (char)RED);
+        break;
+    case Green:
+        rgbValues = tigrRGB((char)(GREEN >> 16), (char)(GREEN >> 8), (char)GREEN);
+        break;
+    case Blue:
+        rgbValues = tigrRGB((char)(BLUE >> 16), (char)(BLUE >> 8), (char)BLUE);
+        break;
+    case Scarlet:
+        rgbValues = tigrRGB((char)(SCARLET >> 16), (char)(SCARLET >> 8), (char)SCARLET);
+        break;
+    case Gray:
+        rgbValues = tigrRGB((char)(GRAY >> 16), (char)(GRAY >> 8), (char)GRAY);
+        break;
+    default:
+        rgbValues = tigrRGB((char)(BLACK >> 16), (char)(BLACK >> 8), (char)BLACK);
+    }
+
+    tigrClear(screen, rgbValues);
+    tigrUpdate(screen);
 }
 
 void FEHLCD::Clear(unsigned int color)
 {
+    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
+    Clear(castedColor);
 }
 
 void FEHLCD::Clear()
 {
+    Clear(Black);
 }
 
 void FEHLCD::SetFontColor(FEHLCDColor color)
 {
+    _forecolor = color;
 }
 
 void FEHLCD::SetFontColor(unsigned int color)
 {
+    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
+    SetFontColor(castedColor);
 }
 
 void FEHLCD::SetBackgroundColor(FEHLCDColor color)
 {
+    _backcolor = color;
 }
 
 void FEHLCD::SetBackgroundColor(unsigned int color)
 {
+    FEHLCDColor castedColor = static_cast<FEHLCDColor>(color);
+    SetBackgroundColor(castedColor);
 }
 
 // Drawing Functions

@@ -31,8 +31,11 @@
 *.out
 *.app
 
-#macOS
+# macOS
 .DS_Store
+
+# VS Code
+*.code_workspace
 
 # Project specific
 game

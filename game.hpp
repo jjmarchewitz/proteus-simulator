@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include "tigr.h"
+#include "FEHLCD.h"
 
 int main();
 

@@ -2,7 +2,7 @@ CC = g++
 LD = $(CC)
 
 TARGET ?= game
-SRC_DIRS ?= ./src
+SRC_DIRS ?= ./lib ./lib/fehproteusfirmware ./lib/fehproteusfirmware/Libraries
 
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS := $(addsuffix .o,$(basename $(SRCS)))
@@ -15,8 +15,8 @@ CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -Os -DOBJC_OLD_DISPATCH_PROTOTYPES
 
 LDFLAGS ?= -framework OpenGL -framework Cocoa
 
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -o $@ $(LOADLIBES) $(LDLIBS)
+$(TARGET): game.o $(OBJS)
+	$(CC) $(LDFLAGS) game.o $(OBJS) -o $@ $(LOADLIBES) $(LDLIBS)
 
 .PHONY: clean
 clean:

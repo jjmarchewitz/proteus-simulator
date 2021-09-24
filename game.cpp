@@ -7,19 +7,22 @@ int main()
 
     LCD.SetFontColor(FEHLCD::Red);
     LCD.DrawPixel(175, 175);
-    LCD.DrawHorizontalLine(25, 50, 200);
-    LCD.DrawVerticalLine(200, 0, 100);
     LCD.DrawRectangle(0, 0, 50, 50);
     LCD.FillRectangle(50, 50, 50, 50);
+    LCD.FillRectangle(320 - 50, 240 - 50, 50, 50);
 
     LCD.SetFontColor(FEHLCD::Green);
-    LCD.FillRectangle(320 - 50, 240 - 50, 50, 50);
-    LCD.DrawVerticalLine(320 / 2, 0, 240);
 
-    LCD.SetFontColor(FEHLCD::Blue);
+    LCD.DrawHorizontalLine(25, 50, 200);
+    LCD.DrawVerticalLine(200, 0, 100);
+    LCD.DrawVerticalLine(320 / 2, 0, 240);
     LCD.DrawLine(25, 25, 100, 100);
     LCD.DrawLine(50, 75, 75, 50);
     LCD.DrawLine(60, 200, 70, 20);
+
+    LCD.SetFontColor(FEHLCD::Blue);
+    LCD.DrawCircle(35, 230, 65);
+    LCD.FillCircle(250, 45, 80);
 
     while (1)
     {

@@ -133,8 +133,15 @@ void Swap(int &a, int &b)
 void FEHLCD::DrawPixel(int x, int y)
 {
     // Force X and Y to be positive
-    x = (x < 0) ? 0 : x;
-    y = (y < 0) ? 0 : y;
+    while (x < 0)
+    {
+        x += _width;
+    }
+
+    while (y < 0)
+    {
+        y += _height;
+    }
 
     // Force X and Y to be within the LCD boundaries
     x = x % _width;
@@ -216,10 +223,76 @@ void FEHLCD::FillRectangle(int x, int y, int width, int height)
 
 void FEHLCD::DrawCircle(int x0, int y0, int r)
 {
+    // This alogorithm is from wikipedia
+    // It's called the "midpoint circle algorithm"
+    // or the "Bresenham's circle algorithm"
+    // http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+    // See the page for further details
+    int f = 1 - r;
+    int ddF_x = 1;
+    int ddF_y = -2 * r;
+    int x = 0;
+    int y = r;
+
+    DrawPixel(x0, y0 + r);
+    DrawPixel(x0, y0 - r);
+    DrawPixel(x0 + r, y0);
+    DrawPixel(x0 - r, y0);
+
+    while (x < y)
+    {
+        if (f >= 0)
+        {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+        DrawPixel(x0 + x, y0 + y);
+        DrawPixel(x0 - x, y0 + y);
+        DrawPixel(x0 + x, y0 - y);
+        DrawPixel(x0 - x, y0 - y);
+        DrawPixel(x0 + y, y0 + x);
+        DrawPixel(x0 - y, y0 + x);
+        DrawPixel(x0 + y, y0 - x);
+        DrawPixel(x0 - y, y0 - x);
+    }
 }
 
 void FEHLCD::FillCircle(int x0, int y0, int r)
 {
+    // This algorithm is a variant on DrawCircle.
+    // Rather than draw the points around the circle,
+    // We connect them with a series of lines
+    // to fill in the circle.
+
+    int f = 1 - r;
+    int ddF_x = 1;
+    int ddF_y = -2 * r;
+    int x = 0;
+    int y = r;
+
+    DrawVerticalLine(x0, y0 - r, y0 + r);
+    DrawHorizontalLine(y0, x0 - r, x0 + r);
+
+    while (x < y)
+    {
+        if (f >= 0)
+        {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+        DrawHorizontalLine(y0 + x, x0 - y, x0 + y);
+        DrawHorizontalLine(y0 - x, x0 - y, x0 + y);
+        DrawVerticalLine(x0 + x, y0 - y, y0 + y);
+        DrawVerticalLine(x0 - x, y0 - y, y0 + y);
+    }
 }
 
 // Write information at a specific Pixel on the screen

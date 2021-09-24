@@ -25,13 +25,13 @@ int main()
     LCD.DrawCircle(35, 230, 65);
     LCD.FillCircle(250, 45, 80);
 
-    int mouseX, mouseY;
+    float mouseX, mouseY;
 
     while (1)
     {
-        LCD.Touch(&mouseX, &mouseY);
+        bool touched = LCD.Touch(&mouseX, &mouseY);
 
-        std::cout << "X: " << mouseX << ", Y:" << mouseY << std::endl;
+        std::cout << touched << " X: " << mouseX << ", Y:" << mouseY << std::endl;
 
         LCD.Update();
     }

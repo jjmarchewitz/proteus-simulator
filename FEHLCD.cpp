@@ -47,12 +47,22 @@ void FEHLCD::_Initialize()
 
 bool FEHLCD::Touch(float *x_pos, float *y_pos)
 {
+    int x_int, y_int;
+    bool touched = Touch(&x_int, &y_int);
+    *x_pos = x_int;
+    *y_pos = y_int;
+
+    return touched;
 }
 
 bool FEHLCD::Touch(int *x_pos, int *y_pos)
 {
     int mouseButton;
     tigrMouse(screen, x_pos, y_pos, &mouseButton);
+
+    // TODO: Test multiple mouse buttons including MMB.
+    // True if left mouse button is pressed.
+    return mouseButton == 1;
 }
 
 void FEHLCD::ClearBuffer()
@@ -80,14 +90,13 @@ void FEHLCD::Clear(FEHLCDColor color)
 
 void FEHLCD::Clear(unsigned int color)
 {
-    // Currently takes in a 24-bit color as input
-    TPixel rgbValues = tigrRGB((char)(color >> 16), (char)(color >> 8), (char)color);
-    tigrClear(screen, rgbValues);
+    SetBackgroundColor(color);
+    _Clear();
 }
 
 void FEHLCD::Clear()
 {
-    Clear(_backcolor);
+    _Clear();
 }
 
 void FEHLCD::Update()
@@ -105,7 +114,6 @@ void FEHLCD::SetFontColor(unsigned int color)
 {
     // Currently takes in a 24-bit color as input
     _forecolor = color;
-    SetRegisterColorValues();
 }
 
 void FEHLCD::SetBackgroundColor(FEHLCDColor color)
@@ -118,7 +126,6 @@ void FEHLCD::SetBackgroundColor(unsigned int color)
 {
     // Currently takes in a 24-bit color as input
     _backcolor = color;
-    SetRegisterColorValues();
 }
 
 void Swap(int &a, int &b)
@@ -423,6 +430,9 @@ int FEHLCD::abs(int n)
 
 void FEHLCD::_Clear()
 {
+    // Currently takes in a 24-bit color as input
+    TPixel rgbValues = tigrRGB((char)(_backcolor >> 16), (char)(_backcolor >> 8), (char)_backcolor);
+    tigrClear(screen, rgbValues);
 }
 
 void FEHLCD::_RepeatColor()

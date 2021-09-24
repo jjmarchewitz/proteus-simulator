@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <iostream>
 
 int main()
 {
@@ -24,8 +25,14 @@ int main()
     LCD.DrawCircle(35, 230, 65);
     LCD.FillCircle(250, 45, 80);
 
+    int mouseX, mouseY;
+
     while (1)
     {
+        LCD.Touch(&mouseX, &mouseY);
+
+        std::cout << "X: " << mouseX << ", Y:" << mouseY << std::endl;
+
         LCD.Update();
     }
 

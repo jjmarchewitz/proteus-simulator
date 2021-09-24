@@ -7,9 +7,8 @@
 
 #define LCD_WIDTH 320
 #define LCD_HEIGHT 240
-#define LCD_SCALE_FACTOR 2
-#define WINDOW_WIDTH 640 // TODO: Consider changing the actual window width and height to have a border around the "screen"
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH LCD_WIDTH // TODO: Consider changing the actual window width and height to have a border around the "screen"
+#define WINDOW_HEIGHT LCD_HEIGHT
 
 #define REFRESH_RATE 70 //Hz
 
@@ -17,6 +16,7 @@ bool initialized = false;
 
 FEHLCD LCD;
 Tigr *screen;
+int scale;
 
 FEHLCD::FEHLCD()
 {
@@ -40,7 +40,8 @@ void FEHLCD::_Initialize()
     _forecolor = WHITE;
     _backcolor = BLACK;
 
-    screen = tigrWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Proteus Simulator", TIGR_AUTO);
+    screen = tigrWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Proteus Simulator", TIGR_AUTO & TIGR_RETINA);
+
     Clear();
 }
 
@@ -50,6 +51,8 @@ bool FEHLCD::Touch(float *x_pos, float *y_pos)
 
 bool FEHLCD::Touch(int *x_pos, int *y_pos)
 {
+    int mouseButton;
+    tigrMouse(screen, x_pos, y_pos, &mouseButton);
 }
 
 void FEHLCD::ClearBuffer()
@@ -149,8 +152,7 @@ void FEHLCD::DrawPixel(int x, int y)
 
     // TODO: Move the creation of this TPixel into SetFontColor()
     TPixel color = tigrRGB((char)(_forecolor >> 16), (char)(_forecolor >> 8), (char)_forecolor);
-    // Use tigrFill because a "pixel" to the student is really a 2x2 rectangle because the dimensions of the LCD are scaled up to be bigger
-    tigrFill(screen, x * LCD_SCALE_FACTOR, y * LCD_SCALE_FACTOR, LCD_SCALE_FACTOR, LCD_SCALE_FACTOR, color);
+    tigrPlot(screen, x, y, color);
 }
 
 void FEHLCD::DrawHorizontalLine(int y, int x1, int x2)

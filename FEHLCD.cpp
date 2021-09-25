@@ -2,8 +2,8 @@
 #include "tigr.h"
 #include <iostream>
 
-#define CharHeight 34 // 2 * 17, the normal character height on the Proteus
-#define CharWidth 12  // 2 * 24, the normal character width on the Proteus
+#define CharHeight 17
+#define CharWidth 12
 
 #define LCD_WIDTH 320
 #define LCD_HEIGHT 240

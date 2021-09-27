@@ -30,4 +30,4 @@ tigr.o: tigr.c tigr.h
 	g++ -Wall -c tigr.c
 
 clean:
-	rm *.o game.o
+	rm *.o game.out

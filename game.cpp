@@ -3,7 +3,7 @@
 
 int main()
 {
-    LCD.SetBackgroundColor(FEHLCD::White);
+    LCD.SetBackgroundColor(FEHLCD::Green);
     LCD.Clear();
 
     LCD.SetFontColor(FEHLCD::Red);
@@ -12,7 +12,7 @@ int main()
     LCD.FillRectangle(50, 50, 50, 50);
     LCD.FillRectangle(320 - 50, 240 - 50, 50, 50);
 
-    LCD.SetFontColor(FEHLCD::Green);
+    LCD.SetFontColor(FEHLCD::Black);
 
     LCD.DrawHorizontalLine(25, 50, 200);
     LCD.DrawVerticalLine(200, 0, 100);
@@ -24,6 +24,9 @@ int main()
     LCD.SetFontColor(FEHLCD::Blue);
     LCD.DrawCircle(35, 230, 65);
     LCD.FillCircle(250, 45, 80);
+    char f = 70;
+    LCD.WriteAt(f, 100, 150);
+    LCD.WriteRC(f, 2, 5);
 
     float mouseX, mouseY;
 

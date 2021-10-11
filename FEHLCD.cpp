@@ -120,6 +120,14 @@ int scale;
 FEHLCD::FEHLCD()
 {
     Initialize();
+
+    _maxlines = 14;
+    _maxcols = 26;
+
+    _currentline = 0;
+    _currentchar = 0;
+
+    _orientation = North;
 }
 
 void FEHLCD::Initialize()
@@ -406,22 +414,52 @@ void FEHLCD::FillCircle(int x0, int y0, int r)
 // Write information at a specific Pixel on the screen
 void FEHLCD::WriteAt(const char *str, int x, int y)
 {
+    int i = 0;
+    while (str[i] != '\0')
+    {
+        WriteCharAt(x, y, str[i]);
+        x += CHAR_WIDTH;
+        i++;
+    }
 }
 
 void FEHLCD::WriteAt(int i, int x, int y)
 {
+    char num[50];
+    sprintf(num, "%d", i);
+    WriteAt(num, x, y);
 }
 
 void FEHLCD::WriteAt(float f, int x, int y)
 {
+    char num[50];
+    int d, r;
+    d = (int)f;
+    r = (int)((f - d) * 1000);
+    if (f < 0.)
+        r = r * -1;
+    if (f < 0. && f > -1.)
+        sprintf(num, "-%d.%03d", d, r);
+    else
+        sprintf(num, "%d.%03d", d, r);
+    WriteAt(num, x, y);
 }
 
 void FEHLCD::WriteAt(double d, int x, int y)
 {
+    WriteAt((float)d, x, y);
 }
 
 void FEHLCD::WriteAt(bool b, int x, int y)
 {
+    if (b)
+    {
+        WriteAt("true", x, y);
+    }
+    else
+    {
+        WriteAt("false", x, y);
+    }
 }
 
 void FEHLCD::WriteAt(char c, int x, int y)
@@ -433,76 +471,164 @@ void FEHLCD::WriteAt(char c, int x, int y)
 
 void FEHLCD::WriteRC(const char *str, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(str, x, y);
 }
 
 void FEHLCD::WriteRC(int i, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(i, x, y);
 }
 
 void FEHLCD::WriteRC(float f, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(f, x, y);
 }
 
 void FEHLCD::WriteRC(double d, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(d, x, y);
 }
 
 void FEHLCD::WriteRC(bool b, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(b, x, y);
 }
 
 void FEHLCD::WriteRC(char c, int row, int col)
 {
+    int x, y;
+
+    y = row * 17;
+    x = col * 12;
+    WriteAt(c, x, y);
+}
 }
 
 // Write to the screen
 void FEHLCD::Write(const char *str)
 {
+    int i = 0;
+    CheckLine();
+    while (str[i] != '\0')
+    {
+        WriteChar(_currentline, _currentchar, str[i]);
+        NextChar();
+        i++;
+    }
 }
 
 void FEHLCD::Write(int i)
 {
+    char num[50];
+    sprintf(num, "%d", i);
+    Write(num);
 }
 
 void FEHLCD::Write(float f)
 {
+    char num[50];
+    int d, r;
+    if (f >= 0)
+    {
+        d = (int)f;
+        r = (int)((f - d) * 1000);
+        sprintf(num, "%d.%03d", d, r);
+    }
+    else
+    {
+        f *= -1;
+        d = (int)f;
+        r = (int)((f - d) * 1000);
+        sprintf(num, "-%d.%03d", d, r);
+    }
+    Write(num);
 }
 
 void FEHLCD::Write(double d)
 {
+    Write((float)d);
 }
 
 void FEHLCD::Write(bool b)
 {
+    if (b)
+    {
+        Write("true");
+    }
+    else
+    {
+        Write("false");
+    }
 }
 
 void FEHLCD::Write(char c)
 {
+    CheckLine();
+    WriteChar(_currentline, _currentchar, c);
+    NextChar();
 }
 
 // Write to the screeen and advance to next line
 void FEHLCD::WriteLine(const char *str)
 {
+    CheckLine();
+    Write(str);
+    NextLine();
 }
 
 void FEHLCD::WriteLine(int i)
 {
+    CheckLine();
+    Write(i);
+    NextLine();
 }
 
 void FEHLCD::WriteLine(float f)
 {
+    CheckLine();
+    Write(f);
+    NextLine();
 }
 
 void FEHLCD::WriteLine(double d)
 {
+    CheckLine();
+    Write(d);
+    NextLine();
 }
 
 void FEHLCD::WriteLine(bool b)
 {
+    CheckLine();
+    Write(b);
+    NextLine();
 }
 
 void FEHLCD::WriteLine(char c)
 {
+    CheckLine();
+    Write(c);
+    NextLine();
 }
 
 typedef struct regColVal
@@ -685,14 +811,30 @@ unsigned int FEHLCD::ConvertRGBColorTo16Bit(unsigned char r, unsigned char g, un
 
 void FEHLCD::NextLine()
 {
+    if (_currentchar > 0)
+    {
+        _currentline++;
+        _currentchar = 0;
+    }
 }
 
 void FEHLCD::CheckLine()
 {
+    if (_currentline >= _maxlines)
+    {
+        _currentline = 0;
+        _Clear();
+    }
 }
 
 void FEHLCD::NextChar()
 {
+    _currentchar++;
+    if (_currentchar == _maxcols)
+    {
+        NextLine();
+        CheckLine();
+    }
 }
 
 void FEHLCD::SetDrawRegion(int x, int y, int width, int height)

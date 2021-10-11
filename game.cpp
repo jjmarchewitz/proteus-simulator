@@ -26,7 +26,8 @@ int main()
     LCD.DrawLine(60, 200, 70, 20);
 
     char f = 70;
-    LCD.WriteAt(f, 100, 150);
+    LCD.WriteAt(278, 100, 150);
+    LCD.WriteAt(92783.333, 100, 170);
     LCD.WriteRC(f, 2, 5);
     LCD.WriteRC(false, 10, 17);
 
@@ -36,7 +37,7 @@ int main()
     {
         bool touched = LCD.Touch(&mouseX, &mouseY);
 
-        // std::cout << touched << " X: " << mouseX << ", Y:" << mouseY << std::endl;
+        std::cout << touched << " X: " << mouseX << ", Y:" << mouseY << std::endl;
 
         LCD.Update();
     }

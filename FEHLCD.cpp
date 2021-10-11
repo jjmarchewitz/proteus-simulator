@@ -522,7 +522,6 @@ void FEHLCD::WriteRC(char c, int row, int col)
     x = col * 12;
     WriteAt(c, x, y);
 }
-}
 
 // Write to the screen
 void FEHLCD::Write(const char *str)

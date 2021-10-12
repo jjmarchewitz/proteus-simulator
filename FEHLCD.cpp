@@ -167,9 +167,7 @@ bool FEHLCD::Touch(int *x_pos, int *y_pos)
     int mouseButton;
     tigrMouse(screen, x_pos, y_pos, &mouseButton);
 
-    // TODO: Test multiple mouse buttons including MMB.
-    // True if left mouse button is pressed.
-    return mouseButton == 1;
+    return mouseButton & 0x01 == 1;
 }
 
 void FEHLCD::ClearBuffer()

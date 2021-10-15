@@ -33,11 +33,16 @@ int main()
 
     float mouseX, mouseY;
 
+    float sleepytime = 0.1;
+
     while (1)
     {
         bool touched = LCD.Touch(&mouseX, &mouseY);
 
-        std::cout << touched << " X: " << mouseX << ", Y:" << mouseY << std::endl;
+        std::cout << touched << " X: " << mouseX << ", Y: " << mouseY << std::endl;
+        std::cout << "TIME (S): " << TimeNowSec() << ", TIME (MS): " << TimeNowMSec() << ", TIME (S DECIMAL): " << TimeNow() << std::endl;
+
+        Sleep(sleepytime);
 
         LCD.Update();
     }

@@ -1,4 +1,5 @@
 #include "FEHLCD.h"
+#include "FEHUtility.cpp"
 #include "tigr.h"
 #include <iostream>
 
@@ -150,6 +151,12 @@ void FEHLCD::_Initialize()
     screen = tigrWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Proteus Simulator", TIGR_AUTO & TIGR_RETINA);
 
     Clear();
+
+    // FEHLCD::_Initialize() will run at the beginning of the student's program.
+    // Since there is no other init function that the students call at the beginning
+    // of their program, ResetTime() must be called here to initialize the timer
+    // in TimeNow() and similar functions in FEHUtility.
+    ResetTime();
 }
 
 bool FEHLCD::Touch(float *x_pos, float *y_pos)

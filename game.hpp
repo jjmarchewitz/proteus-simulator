@@ -3,6 +3,8 @@
 
 #include "tigr.h"
 #include "FEHLCD.h"
+#include "FEHRandom.h"
+#include "FEHUtility.h"
 
 int main();
 

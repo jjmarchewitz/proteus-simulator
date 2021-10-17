@@ -5,6 +5,7 @@
 #include "FEHLCD.h"
 #include "FEHRandom.h"
 #include "FEHUtility.h"
+#include "FEHSD.h"
 
 int main();
 

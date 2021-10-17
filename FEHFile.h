@@ -7,10 +7,11 @@ class FEHFile
 {
 public:
 	FILE wrapper;
-	static int fileIdNum;
+	int fileIdNum;
+	static int numberOfFiles;
 	FEHFile()
 	{
-		fileIdNum++;
+		fileIdNum = numberOfFiles++;
 	}
 };
 #endif

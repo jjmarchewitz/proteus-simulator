@@ -6,8 +6,9 @@
     "configurations": [
         {
             "name": "(lldb) Game Launch",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
+            "targetArchitecture": "arm64",
             "program": "${workspaceFolder}/game.out",
             "args": [],
             "stopAtEntry": true,
@@ -16,18 +17,5 @@
             "externalConsole": false,
             "MIMode": "lldb"
         },
-        {
-            "name": "g++ - Build and debug active file",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb",
-            "preLaunchTask": "C/C++: g++ build active file"
-        }
     ]
 }

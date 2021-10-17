@@ -10,12 +10,12 @@ class FEHSD
 {
 public:
     FEHSD();
-    FEHFile *FOpen(const TCHAR *str, const TCHAR *mode);
+    FEHFile *FOpen(const char *str, const char *mode);
     int FClose(FEHFile *fptr);
     int FCloseAll();
-    int FPrintf(FEHFile *fptr, const TCHAR *format,
+    int FPrintf(FEHFile *fptr, const char *format,
                 /* Pointer to the format string */...);
-    int FScanf(FEHFile *fptr, const TCHAR *format, ...);
+    int FScanf(FEHFile *fptr, const char *format, ...);
     int FEof(FEHFile *fptr);
     //int FSeek(FEHFile *fptr, long int offset, int position);
 

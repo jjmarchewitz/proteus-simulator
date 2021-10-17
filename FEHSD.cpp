@@ -1,6 +1,6 @@
 #include "FEHSD.h"
 #include "FEHLCD.h"
-#include <stdarg.h>
+#include <cstdarg>
 #include <iostream>
 
 using namespace std;
@@ -85,15 +85,15 @@ int FEHSD::FPrintf(FEHFile *fptr, const char *format, ...)
     va_list args;
     va_start(args, format);
 
-    int numChars = fprintf(&(fptr->wrapper), format, args);
-    fprintf(stdout, format, args);
+    int numChars = vfprintf(&(fptr->wrapper), format, args);
+
+    va_end(args);
 
     if (ferror(&(fptr->wrapper)) != 0)
     {
         LCD.WriteLine("Error printing to file");
         return -1;
     }
-    va_end(args);
 
     // Return number of characters printed
     return numChars;

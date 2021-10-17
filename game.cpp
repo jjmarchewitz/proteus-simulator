@@ -43,24 +43,22 @@ int main()
 
     SD.FScanf(testfile, "%d %d", &a, &b);
 
-    while (TimeNowMSec() < 500)
+    while (TimeNowMSec() < 5000)
     {
         bool touched = LCD.Touch(&mouseX, &mouseY);
 
-        std::cout << touched << " X: " << mouseX << ", Y: " << mouseY << ", A: " << a << ", B: " << b << std::endl;
-        // std::cout << "TIME (S): " << TimeNowSec() << ", TIME (MS): " << TimeNowMSec() << ", TIME (S DECIMAL): " << TimeNow() << std::endl;
+        std::cout << touched << " X: " << mouseX << ", Y: " << mouseY << ", A: " << a << ", B: " << b << ", RAND: " << Random.RandInt() << std::endl;
+        std::cout << "TIME (S): " << TimeNowSec() << ", TIME (MS): " << TimeNowMSec() << ", TIME (S DECIMAL): " << TimeNow() << std::endl;
 
-        SD.FPrintf(testfile2, "%d: %d, %d\n", touched, mouseX, mouseY);
+        SD.FPrintf(testfile2, "%d: %.0f, %.0f\n", touched, mouseX, mouseY);
 
         Sleep(sleepytime);
 
         LCD.Update();
     }
 
-    int c = SD.FClose(testfile);
-    int d = SD.FClose(testfile2);
-
-    std::cout << c << " " << d << std::endl;
+    SD.FClose(testfile);
+    SD.FClose(testfile2);
     //SD.FCloseAll();
 
     return 0;

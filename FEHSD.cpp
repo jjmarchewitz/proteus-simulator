@@ -11,25 +11,27 @@ int FEHFile::numberOfFiles = 0;
 
 FEHSD::FEHSD()
 {
+    // This function is only present to make the code compile and match the header file
 }
 
 FEHFile *FEHSD::FOpen(const char *str, const char *mode)
 {
-    FEHFile *File = new FEHFile();
+    FEHFile *fehFile = new FEHFile();
 
-    FILE *temp = fopen(str, mode);
+    FILE *diskFile = fopen(str, mode);
 
-    if (temp == NULL)
+    // Sets the entire fehFile object to NULL if the disk file is NULL, otherwise populates fehFile.
+    if (diskFile == NULL)
     {
-        File = NULL;
+        fehFile = NULL;
     }
     else
     {
-        File->wrapper = *temp;
-        filePtrs[SD.numberOfFiles++] = File;
+        fehFile->wrapper = *diskFile;
+        filePtrs[SD.numberOfFiles++] = fehFile;
     }
 
-    return File;
+    return fehFile;
 }
 
 int FEHSD::FClose(FEHFile *fptr)
@@ -38,6 +40,7 @@ int FEHSD::FClose(FEHFile *fptr)
 
     if (fptr != NULL)
     {
+        // Search through filePtrs to find the given pointer
         for (int i = 0; i < SD.numberOfFiles; i++)
         {
             if (fptr->fileIdNum == (filePtrs[i])->fileIdNum)
@@ -65,18 +68,19 @@ int FEHSD::FClose(FEHFile *fptr)
 int FEHSD::FCloseAll()
 {
     int retVal;
-    if (SD.isInitialized)
+
+    // Closes any non-null file pointer in filePtrs
+    for (int i = 0; i < SD.numberOfFiles; i++)
     {
-        for (int i = 0; i < SD.numberOfFiles; i++)
+        if (filePtrs[i] != NULL)
         {
-            if (filePtrs[i] != NULL)
-            {
-                retVal = fclose(&(filePtrs[i]->wrapper));
-            }
+            retVal = fclose(&(filePtrs[i]->wrapper));
+
+            filePtrs[i] = NULL;
         }
-        SD.numberOfFiles = 0;
-        SD.isInitialized = 0;
     }
+    SD.numberOfFiles = 0;
+
     return retVal;
 }
 
@@ -85,6 +89,7 @@ int FEHSD::FPrintf(FEHFile *fptr, const char *format, ...)
     va_list args;
     va_start(args, format);
 
+    // Variable args version of fprintf
     int numChars = vfprintf(&(fptr->wrapper), format, args);
 
     va_end(args);

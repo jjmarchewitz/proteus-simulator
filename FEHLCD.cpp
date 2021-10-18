@@ -269,7 +269,6 @@ void FEHLCD::DrawPixel(int x, int y)
     x = x % _width;
     y = y % _height;
 
-    // TODO: Move the creation of this TPixel into SetFontColor()
     TPixel color = tigrRGB((char)(_forecolor >> 16), (char)(_forecolor >> 8), (char)_forecolor);
     tigrPlot(screen, x, y, color);
 }

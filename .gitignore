@@ -36,7 +36,7 @@
 
 # VS Code
 .vscode
-*.code_workspace
+*.code-workspace
 
 # Project specific
 game

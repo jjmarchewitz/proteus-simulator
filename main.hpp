@@ -1,5 +1,5 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#ifndef MAIN_HPP
+#define MAIN_HPP
 
 #include "FEHLCD.h"
 #include "FEHRandom.h"

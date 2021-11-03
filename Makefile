@@ -1,7 +1,7 @@
 CC = g++
 LD = $(CC)
 
-TARGET = game
+TARGET = main
 
 CPPFLAGS = -MMD -MP -Os -DOBJC_OLD_DISPATCH_PROTOTYPES -g
 
@@ -15,17 +15,17 @@ OBJS = $(LIB_DIR)/FEHLCD.o $(LIB_DIR)/FEHRandom.o $(LIB_DIR)/FEHSD.o $(LIB_DIR)/
 
 ifeq ($(OS),Windows_NT)
 	LDFLAGS = -lopengl32 -lgdi32
-	EXEC = game.exe
+	EXEC = $(TARGET).exe
 else
 	LDFLAGS = -framework OpenGL -framework Cocoa
-	EXEC = game.out
+	EXEC = $(TARGET).out
 endif
 
-game: game.o $(OBJS)
-	$(CC) $(CPPFLAGS) $(INC_DIRS) $(OBJS) game.o -o $(EXEC) $(LDFLAGS) $(IGNORED_WARNINGS)
+$(TARGET): $(TARGET).o $(OBJS)
+	$(CC) $(CPPFLAGS) $(INC_DIRS) $(OBJS) $(TARGET).o -o $(EXEC) $(LDFLAGS) $(IGNORED_WARNINGS)
 
-game.o: game.cpp game.hpp 
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c game.cpp
+$(TARGET).o: $(TARGET).cpp $(TARGET).hpp 
+	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(TARGET).cpp
 
 FEHLCD.o: $(LIB_DIR)/FEHLCD.cpp $(LIB_DIR)/FEHLCD.h $(LIB_DIR)/FEHUtility.o
 	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/FEHLCD.cpp

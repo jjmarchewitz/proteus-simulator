@@ -8,7 +8,7 @@ struct timeval current_time;
 
 void Sleep(int msec)
 {
-    // std::this_thread::sleep_for(std::chrono::milliseconds(msec));
+    std::this_thread::sleep_for(std::chrono::milliseconds(msec));
 }
 
 void Sleep(float sec)

@@ -35,6 +35,7 @@
 .DS_Store
 
 # VS Code
+.vscode
 *.code_workspace
 
 # Project specific

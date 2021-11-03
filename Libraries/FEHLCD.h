@@ -4,6 +4,7 @@
 // #include "spi.h"
 // #include "derivative.h"
 #include <stdint.h>
+#include <cstring>
 #include "LCDColors.h"
 
 class FEHLCD

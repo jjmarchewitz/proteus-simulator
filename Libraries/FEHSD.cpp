@@ -1,6 +1,7 @@
 #include "FEHSD.h"
 #include "FEHLCD.h"
 #include <cstdarg>
+#include <cstdio>
 #include <iostream>
 
 using namespace std;
@@ -27,7 +28,7 @@ FEHFile *FEHSD::FOpen(const char *str, const char *mode)
     }
     else
     {
-        fehFile->wrapper = *diskFile;
+        fehFile->wrapper = diskFile;
         filePtrs[SD.numberOfFiles++] = fehFile;
     }
 
@@ -45,7 +46,7 @@ int FEHSD::FClose(FEHFile *fptr)
         {
             if (fptr->fileIdNum == (filePtrs[i])->fileIdNum)
             {
-                retVal = fclose(&(filePtrs[i]->wrapper));
+                retVal = fclose(filePtrs[i]->wrapper);
 
                 //Shift all elements in array one over to the left
                 SD.numberOfFiles--;
@@ -74,7 +75,7 @@ int FEHSD::FCloseAll()
     {
         if (filePtrs[i] != NULL)
         {
-            retVal = fclose(&(filePtrs[i]->wrapper));
+            retVal = fclose(filePtrs[i]->wrapper);
 
             filePtrs[i] = NULL;
         }
@@ -90,11 +91,11 @@ int FEHSD::FPrintf(FEHFile *fptr, const char *format, ...)
     va_start(args, format);
 
     // Variable args version of fprintf
-    int numChars = vfprintf(&(fptr->wrapper), format, args);
+    int numChars = vfprintf(fptr->wrapper, format, args);
 
     va_end(args);
 
-    if (ferror(&(fptr->wrapper)) != 0)
+    if (ferror(fptr->wrapper) != 0)
     {
         LCD.WriteLine("Error printing to file");
         return -1;
@@ -110,19 +111,20 @@ int FEHSD::FScanf(FEHFile *fptr, const char *format, ...)
     va_start(args, format);
 
     // Check for end of file, return -1 if eof
-    if (feof(&(fptr->wrapper)))
+    if (feof(fptr->wrapper))
     {
         return -1;
     }
 
     // Create string buffer (buffer > 2048 will crash)
     int bufferSize = 2048;
-    char buffer[bufferSize];
+    char* buffer;
+	buffer = (char*) malloc(bufferSize * sizeof(char*));
 
     // Get correct line and store in buffer
-    fgets(buffer, bufferSize, &(fptr->wrapper));
+    fgets(buffer, bufferSize, fptr->wrapper);
 
-    if (ferror(&(fptr->wrapper)) != 0)
+    if (ferror(fptr->wrapper) != 0)
     {
         LCD.WriteLine("Error reading from file");
         return -1;
@@ -139,5 +141,5 @@ int FEHSD::FScanf(FEHFile *fptr, const char *format, ...)
 
 int FEHSD::FEof(FEHFile *fptr)
 {
-    return feof(&(fptr->wrapper));
+    return feof(fptr->wrapper);
 }

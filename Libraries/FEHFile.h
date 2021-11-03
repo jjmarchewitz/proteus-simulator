@@ -6,7 +6,7 @@
 class FEHFile
 {
 public:
-	FILE wrapper;
+	FILE* wrapper;
 	int fileIdNum;
 	static int numberOfFiles;
 	FEHFile()

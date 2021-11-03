@@ -43,7 +43,7 @@ int main()
 
     SD.FScanf(testfile, "%d %d", &a, &b);
 
-    while (TimeNowMSec() < 5000)
+    while (1)
     {
         bool touched = LCD.Touch(&mouseX, &mouseY);
 

@@ -32,20 +32,31 @@ int main()
     LCD.WriteRC(f, 2, 5);
     LCD.WriteRC(false, 10, 17);
 
+    // Close button
+    LCD.SetFontColor(FEHLCD::White);
+    LCD.FillRectangle(320 - 25, 0, 25, 25);
+    LCD.FillRectangle(320 - 100, 25, 100, 25);
+    LCD.SetFontColor(FEHLCD::Red);
+    LCD.DrawRectangle(320 - 25, 0, 25, 25);
+    LCD.DrawLine(320 - 24, 0, 320, 24);
+    LCD.DrawLine(320 - 24, 24, 320, 0);
+    LCD.WriteAt("close ^^", 320 - 100, 30);
+
     float mouseX, mouseY;
 
     float sleepytime = 0.1;
 
-    FEHFile *testfile = SD.FOpen("test.txt", "r+");
-    FEHFile *testfile2 = SD.FOpen("test2.txt", "w+");
+    FEHFile *testfile = SD.FOpen("input_text.txt", "r+");
+    FEHFile *testfile2 = SD.FOpen("output_text.txt", "w+");
 
     int a = 0, b = 0;
+    bool touched = false;
 
     SD.FScanf(testfile, "%d %d", &a, &b);
 
-    while (1)
+    while (!(touched && mouseX > 320 - 25 && mouseY < 25))
     {
-        bool touched = LCD.Touch(&mouseX, &mouseY);
+        touched = LCD.Touch(&mouseX, &mouseY);
 
         std::cout << touched << " X: " << mouseX << ", Y: " << mouseY << ", A: " << a << ", B: " << b << ", RAND: " << Random.RandInt() << std::endl;
         std::cout << "TIME (S): " << TimeNowSec() << ", TIME (MS): " << TimeNowMSec() << ", TIME (S DECIMAL): " << TimeNow() << std::endl;

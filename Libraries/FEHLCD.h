@@ -1,10 +1,10 @@
 #ifndef FEHLCD_H
 #define FEHLCD_H
 
-// #include "spi.h"
-// #include "derivative.h"
 #include <stdint.h>
 #include <cstring>
+#include <cstdlib>
+#include <ctime>
 #include "LCDColors.h"
 
 class FEHLCD
@@ -170,7 +170,7 @@ namespace FEHIcon
         void Select();
         void Deselect();
         int Pressed(float x, float y, int mode);
-        int WhilePressed(float xi, float yi);
+        void WhilePressed(float xi, float yi);
         void ChangeLabelString(const char new_label[20]);
         void ChangeLabelFloat(float val);
         void ChangeLabelInt(int val);

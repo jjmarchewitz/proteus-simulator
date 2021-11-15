@@ -1,11 +1,11 @@
 #include "FEHLCD.h"
-#include "FEHUtility.cpp"
 #include "tigr.h"
+#include "FEHUtility.cpp"
 #include <iostream>
 
 #define LCD_WIDTH 320
 #define LCD_HEIGHT 240
-#define WINDOW_WIDTH LCD_WIDTH // TODO: Consider changing the actual window width and height to have a border around the "screen"
+#define WINDOW_WIDTH LCD_WIDTH
 #define WINDOW_HEIGHT LCD_HEIGHT
 
 #define REFRESH_RATE 70 //Hz
@@ -154,9 +154,9 @@ void FEHLCD::_Initialize()
 
     // FEHLCD::_Initialize() will run at the beginning of the student's program.
     // Since there is no other init function that the students call at the beginning
-    // of their program, ResetTime() must be called here to initialize the timer
-    // in TimeNow() and similar functions in FEHUtility.
+    // of their program, this is where other classes do their setup.
     ResetTime();
+    srand((unsigned int)time(NULL));
 }
 
 bool FEHLCD::Touch(float *x_pos, float *y_pos)
@@ -174,7 +174,7 @@ bool FEHLCD::Touch(int *x_pos, int *y_pos)
     int mouseButton;
     tigrMouse(screen, x_pos, y_pos, &mouseButton);
 
-    return mouseButton & 0x01 == 1;
+    return (mouseButton & 0x01) == 1;
 }
 
 void FEHLCD::ClearBuffer()
@@ -741,7 +741,7 @@ void FEHLCD::WriteCharAt(int x, int y, char c)
         for (int row = 0; row < 7; row++)
         {
             // If the current pixel is a 1 in the fontData bitmap
-            if ((charData[col] >> row) & 0x01 == 1)
+            if (((charData[col] >> row) & 0x01) == 1)
             {
                 // Draw a 2x2 rectangle to represent each pixel since sizes are doubled
                 FillRectangle(x + col * 2, y + row * 2, 2, 2);
@@ -903,21 +903,19 @@ namespace FEHIcon
         if (x >= x_start && x <= x_end && y >= y_start && y <= y_end)
         {
             LCD.Touch(&x, &y);
-            if (x >= x_start && x <= x_end && y >= y_start && y <= y_end) // check twice to avoid buggy touch screen issues
+
+            if (!mode) // if mode is 0, then alternate selecting and deselecting as it is pressed again and again; otherwise, the icon does not select and deselect
             {
-                if (!mode) // if mode is 0, then alternate selecting and deselecting as it is pressed again and again; otherwise, the icon does not select and deselect
+                if (!set)
                 {
-                    if (!set)
-                    {
-                        Select();
-                    }
-                    else if (set)
-                    {
-                        Deselect();
-                    }
+                    Select();
                 }
-                return 1;
+                else if (set)
+                {
+                    Deselect();
+                }
             }
+            return 1;
         }
         else
         {
@@ -926,7 +924,7 @@ namespace FEHIcon
     }
 
     /* Icon function to wait while it is pressed */
-    int Icon::WhilePressed(float xi, float yi)
+    void Icon::WhilePressed(float xi, float yi)
     {
         float x = xi, y = yi;
         while (Pressed(x, y, 1))

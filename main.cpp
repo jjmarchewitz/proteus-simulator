@@ -1,76 +1,72 @@
 #include "main.hpp"
 #include <iostream>
-#include <stdio.h>
+
+#define VELOCITY 2
+#define FEH_WIDTH 36
+#define FEH_HEIGHT 17
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+#define SLEEP_TIME 0.01
+
+void randomizeColor();
 
 int main()
 {
-    LCD.SetBackgroundColor(FEHLCD::Green);
-    LCD.Clear();
-
-    LCD.SetFontColor(FEHLCD::Black);
-    LCD.Write("Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about");
-
+    LCD.SetBackgroundColor(FEHLCD::White);
     LCD.SetFontColor(FEHLCD::Red);
-    LCD.DrawPixel(175, 175);
-    LCD.DrawRectangle(0, 0, 50, 50);
-    LCD.FillRectangle(50, 50, 50, 50);
-    LCD.FillRectangle(320 - 50, 240 - 50, 50, 50);
-    LCD.DrawCircle(35, 230, 65);
-    LCD.FillCircle(250, 105, 40);
+    LCD.Update();
 
-    LCD.SetFontColor(FEHLCD::Blue);
-    LCD.DrawHorizontalLine(25, 50, 200);
-    LCD.DrawVerticalLine(200, 0, 100);
-    LCD.DrawVerticalLine(320 / 2, 0, 240);
-    LCD.DrawLine(25, 25, 100, 100);
-    LCD.DrawLine(50, 75, 75, 50);
-    LCD.DrawLine(60, 200, 70, 20);
+    int x = Random.RandInt() % SCREEN_WIDTH;
+    int y = Random.RandInt() % SCREEN_HEIGHT;
 
-    char f = 70;
-    LCD.WriteAt(278, 100, 150);
-    LCD.WriteAt(927.333, 100, 170);
-    LCD.WriteRC(f, 2, 5);
-    LCD.WriteRC(false, 10, 17);
+    int x_direction = 1; // 1 is positive, -1 is negative
+    int y_direction = 1;
 
-    // Close button
-    LCD.SetFontColor(FEHLCD::White);
-    LCD.FillRectangle(320 - 25, 0, 25, 25);
-    LCD.FillRectangle(320 - 100, 25, 100, 25);
-    LCD.SetFontColor(FEHLCD::Red);
-    LCD.DrawRectangle(320 - 25, 0, 25, 25);
-    LCD.DrawLine(320 - 24, 0, 320, 24);
-    LCD.DrawLine(320 - 24, 24, 320, 0);
-    LCD.WriteAt("close ^^", 320 - 100, 30);
-
-    float mouseX, mouseY;
-
-    float sleepytime = 0.1;
-
-    FEHFile *testfile = SD.FOpen("input_text.txt", "r+");
-    FEHFile *testfile2 = SD.FOpen("output_text.txt", "w+");
-
-    int a = 0, b = 0;
-    bool touched = false;
-
-    SD.FScanf(testfile, "%d %d", &a, &b);
-
-    while (!(touched && mouseX > 320 - 25 && mouseY < 25))
+    while (true)
     {
-        touched = LCD.Touch(&mouseX, &mouseY);
+        LCD.Clear();
 
-        std::cout << touched << " X: " << mouseX << ", Y: " << mouseY << ", A: " << a << ", B: " << b << ", RAND: " << Random.RandInt() << std::endl;
-        std::cout << "TIME (S): " << TimeNowSec() << ", TIME (MS): " << TimeNowMSec() << ", TIME (S DECIMAL): " << TimeNow() << std::endl;
+        LCD.WriteAt("FEH", x - (FEH_WIDTH / 2), y - (FEH_HEIGHT / 2));
 
-        SD.FPrintf(testfile2, "%d: %.0f, %.0f\n", touched, mouseX, mouseY);
+        // If the text is about to go off-screen in the x-direction
+        if (x + (FEH_WIDTH / 2) > SCREEN_WIDTH || x - (FEH_WIDTH / 2) < 0)
+        {
+            // Flip the direction the text is traveling
+            x_direction *= -1;
+            randomizeColor();
+        }
 
-        Sleep(sleepytime);
+        // If the text is about to go off-screen in the y-direction
+        if (y + (FEH_HEIGHT / 2) > SCREEN_HEIGHT || y - (FEH_HEIGHT / 2) < 0)
+        {
+            // Flip the direction the text is traveling
+            y_direction *= -1;
+            randomizeColor();
+        }
 
+        // Increment the position of the text
+        x += x_direction * VELOCITY;
+        y += y_direction * VELOCITY;
+
+        Sleep(SLEEP_TIME);
         LCD.Update();
     }
 
-    // SD.FClose(testfile);
-    // SD.FClose(testfile2);
-    SD.FCloseAll();
-
     return 0;
+}
+
+void randomizeColor()
+{
+    // Get a random new color
+    FEHLCD::FEHLCDColor newColor = static_cast<FEHLCD::FEHLCDColor>(Random.RandInt() % 6);
+
+    // Prevent the color from being the same as the background
+    if (newColor != FEHLCD::White)
+    {
+        LCD.SetFontColor(newColor);
+    }
+    else
+    {
+        randomizeColor();
+    }
 }

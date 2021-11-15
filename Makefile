@@ -22,7 +22,7 @@ else
 endif
 
 $(TARGET): $(TARGET).o $(OBJS)
-	$(CC) $(CPPFLAGS) $(INC_DIRS) $(OBJS) $(TARGET).o -o $(EXEC) $(LDFLAGS) $(IGNORED_WARNINGS)
+	$(CC) $(CPPFLAGS) $(IGNORED_WARNINGS) $(INC_DIRS) $(OBJS) $(TARGET).o -o $(EXEC) $(LDFLAGS) 
 
 $(TARGET).o: $(TARGET).cpp $(TARGET).hpp 
 	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(TARGET).cpp

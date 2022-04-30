@@ -1,47 +1,33 @@
-CC = g++
-LD = $(CC)
+FIRMWAREFOLDER := Firmware
+SIMULATORFOLDER := Simulator
 
-TARGET = main
+.PHONY: proteus simulator clean
 
-CPPFLAGS = -MMD -MP -Os -DOBJC_OLD_DISPATCH_PROTOTYPES -g
-
-IGNORED_WARNINGS = -Wall
-
-LIB_DIR = Libraries
-
-INC_DIRS = -I$(LIB_DIR) -I.
-
-OBJS = $(LIB_DIR)/FEHLCD.o $(LIB_DIR)/FEHRandom.o $(LIB_DIR)/FEHSD.o $(LIB_DIR)/tigr.o
-
-ifeq ($(OS),Windows_NT)
-	LDFLAGS = -lopengl32 -lgdi32
-	EXEC = $(TARGET).exe
-else
-	LDFLAGS = -framework OpenGL -framework Cocoa
-	EXEC = $(TARGET).out
+# Change shell to CMD if on Windows
+ifeq ($(OS),Windows_NT)	
+	SHELL := CMD
 endif
 
-$(TARGET): $(TARGET).o $(OBJS)
-	$(CC) $(CPPFLAGS) $(IGNORED_WARNINGS) $(INC_DIRS) $(OBJS) $(TARGET).o -o $(EXEC) $(LDFLAGS) 
 
-$(TARGET).o: $(TARGET).cpp $(TARGET).hpp 
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(TARGET).cpp
+proteus:
+ifeq ($(OS),Windows_NT)	
+	@cd $(FIRMWAREFOLDER) && mingw32-make all
+else
+	@cd $(FIRMWAREFOLDER) && make all
+endif
 
-FEHLCD.o: $(LIB_DIR)/FEHLCD.cpp $(LIB_DIR)/FEHLCD.h $(LIB_DIR)/FEHUtility.o
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/FEHLCD.cpp
-
-FEHUtility.o: $(LIB_DIR)/FEHUtility.cpp $(LIB_DIR)/FEHUtility.h
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/FEHUtility.cpp
-
-FEHRandom.o: $(LIB_DIR)/FEHRandom.cpp $(LIB_DIR)/FEHRandom.h
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/FEHRandom.cpp
-
-FEHSD.o: $(LIB_DIR)/FEHSD.cpp $(LIB_DIR)/FEHSD.h
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/FEHSD.cpp
-
-tigr.o: $(LIB_DIR)/tigr.c $(LIB_DIR)/tigr.h
-	$(CC) $(IGNORED_WARNINGS) $(INC_DIRS) -c $(LIB_DIR)/tigr.c
+simulator:
+ifeq ($(OS),Windows_NT)	
+	@cd $(SIMULATORFOLDER) && mingw32-make all
+else
+	@cd $(SIMULATORFOLDER) && make all	
+endif
 
 clean:
-	rm $(LIB_DIR)/*.o $(LIB_DIR)/*.d
-	rm *.o $(EXEC)
+ifeq ($(OS),Windows_NT)	
+	@cd $(FIRMWAREFOLDER) && mingw32-make clean
+	@cd $(SIMULATORFOLDER) && mingw32-make clean
+else
+	@cd $(FIRMWAREFOLDER) && make clean
+	@cd $(SIMULATORFOLDER) && make clean
+endif
